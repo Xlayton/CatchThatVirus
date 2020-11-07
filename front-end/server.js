@@ -76,12 +76,43 @@ io.on("connection", (sock) => {
     sock.send(JSON.stringify(lobby))
 
     sock.on("placewall", data => {
-        console.log(data)
-        console.log(Object.keys(sock.rooms))
+        let roomid = data.roomid
+        let lobby = lobbies.filter((lobby) => lobby.id === roomid)[0]
+        if (!lobby) {
+            sock.send("Game Closed.")
+            return
+        }
+        if (lobby.board[data.x][data.y] === "Empty") {
+            lobby.board[data.x][data.y] = "Wall"
+            sock.emit("updateboard", JSON.stringify(lobby))
+            console.log(lobby.board)
+            return
+        } else {
+            sock.send("Invalid Position.")
+        }
     })
     sock.on("movevirus", data => {
-        console.log(data)
-        console.log(Object.keys(sock.rooms))
+        let roomid = data.roomid
+        let lobby = lobbies.filter((lobby) => lobby.id === roomid)[0]
+        if (!lobby) {
+            sock.send("Game Closed.")
+            return
+        }
+        if (lobby.board[data.x][data.y] === "Empty") {
+            for (let row of lobby.board) {
+                for (let cell of row) {
+                    if (cell === "Virus") {
+                        cell = "Empty"
+                    }
+                }
+            }
+            lobby.board[data.x][data.y] = "Virus"
+            sock.emit("updateboard", JSON.stringify(lobby))
+            console.log(lobby.board)
+            return
+        } else {
+            sock.send("Invalid Position.")
+        }
     })
 })
 
