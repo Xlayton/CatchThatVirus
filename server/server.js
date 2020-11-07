@@ -2,23 +2,23 @@ const uuid = require("uuid")
 const express = require("express")
 
 const app = express();
-app.use(function (req, res, next) {
+app.use(cors())
+app.use(express.static(`${__dirname}/../front-end`))
+
+const server = require("http").createServer(app, function (req, res) {
     // Set CORS headers
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Request-Method', '*');
     res.setHeader('Access-Control-Allow-Headers', '*');
-    next()
-})
-app.use(express.static(`${__dirname}/../front-end`))
-
-const server = require("http").createServer(app);
+});
 const io = require("socket.io")(server, {
     path: "/game",
     serveClient: false,
     // below are engine.IO options
     pingInterval: 10000,
     pingTimeout: 5000,
-    cookie: false
+    cookie: false,
+    origins: '*:*'
 })
 
 const BOARD_WIDTH = 15
