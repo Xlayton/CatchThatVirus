@@ -57,7 +57,7 @@ fetch(`${location.origin}/api/lobbies`)
             lobbyId.classList.add("lobby-id")
             let joinBtn = document.createElement("button")
             joinBtn.innerText = "Join"
-            joinBtn.addEventListener("click", () => console.log(element.id))
+            joinBtn.addEventListener("click", () => urlId(element.id))
             joinBtn.classList.add("join-lobby-btn")
             lobby.append(lobbyName, lobbyId, joinBtn)
             document.getElementById("lobbyList").append(lobby)
