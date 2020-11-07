@@ -13,10 +13,14 @@ canvas.height = window.innerHeight;
 canvas.addEventListener("click", function (e) {
     clicked(e)
 })
+let reg = /(?<=id=)([^/\&\?]*)(?<![\/?\&?\??])/;
+let myUrl = window.location.href.match(reg);
+console.log(myUrl);
+
 const socket = io(`${location.origin}`, {
     path: '/game',
     query: {
-        roomid: "d08d0265-10ca-4e8d-bd72-13dd38495737"
+        roomid: myUrl[0]
     }
 });
 socket.on("message", data => {
