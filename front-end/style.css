@@ -1,4 +1,4 @@
-
+/* Team page */
 .welcomeTitle {
     display: flex;
     justify-content: center;
@@ -31,4 +31,35 @@ img {
 .teamTitle {
     display: flex;
     justify-content: center;
+}
+
+/* Game style */
+.createLobby {
+    display: flex;
+}
+
+.inputs {
+    flex-grow: 3;
+    display: flex;
+    justify-content: stretch;
+}
+
+.inputs input {
+    width: 100%;
+}
+
+/* Nav bar */
+nav {
+    display: flex;
+    background-color: #555555;
+}
+
+nav a {
+    color: #fff;
+    text-decoration: none;
+    margin: 10px;
+}
+
+nav a:hover {
+    background-color: #454545;
 }
