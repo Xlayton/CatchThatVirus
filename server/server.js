@@ -2,7 +2,7 @@ const uuid = require("uuid")
 const express = require("express")
 
 const app = express();
-app.use(cors())
+//app.use(cors())
 app.use(express.static(`${__dirname}/../front-end`))
 
 const server = require("http").createServer(app, function (req, res) {
