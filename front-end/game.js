@@ -16,7 +16,7 @@ canvas.addEventListener("click", function (e) {
 const socket = io(`${location.origin}`, {
     path: '/game',
     query: {
-        roomid: "9e5da705-3101-44c8-9343-76cd6894b5b7"
+        roomid: "f04303e1-2174-4b99-84ae-8cbe8c8b81db"
     }
 });
 socket.on("message", data => {
@@ -42,11 +42,21 @@ socket.on("updateboard", data => {
     }
     roomid = rawBoard.id
     board = rawBoard.board
+    console.log(board)
     getBoard()
+})
+socket.on("gameover", data => {
+    console.log(`${data} Wins!`)
 })
 
 function getBoard() {
     var size = (canvas.width / board.length) > (canvas.height / board[0].length) ? (canvas.height / board[0].length) : (canvas.width / board.length);
+    for (let i = 0; i < board.length; i++) {
+        for (let i2 = 0; i2 < board[i].length; i2++) {
+            ctx.fillStyle = "#FFF"
+            ctx.fillRect((i * size), (i2 * size), size, size);
+        }
+    }
     for (let i = 0; i < board.length; i++) {
         for (let i2 = 0; i2 < board[i].length; i2++) {
             if (board[i][i2] == "Empty") {
