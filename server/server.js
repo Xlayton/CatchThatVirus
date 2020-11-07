@@ -2,24 +2,8 @@ const uuid = require("uuid")
 const express = require("express")
 
 const app = express();
-//app.use(cors())
-app.use(express.static(`${__dirname}/../front-end`))
-
-const server = require("http").createServer(app, function (req, res) {
-    // Set CORS headers
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Request-Method', '*');
-    res.setHeader('Access-Control-Allow-Headers', '*');
-});
-const io = require("socket.io")(server, {
-    path: "/game",
-    serveClient: false,
-    // below are engine.IO options
-    pingInterval: 10000,
-    pingTimeout: 5000,
-    cookie: false,
-    origins: '*:*'
-})
+const cors = require("cors")
+app.use(express.static(`${__dirname}/../front-end`), cors())
 
 const BOARD_WIDTH = 15
 const BOARD_HEIGHT = 15
@@ -42,7 +26,16 @@ const generateBoard = (width, height) => {
 
 let lobbies = []
 
-io.on("connect", (sock) => {
+const server = require("http").createServer(app);
+const io = require("socket.io")(server, {
+    path: "/game",
+    serveClient: false,
+    pingInterval: 10000,
+    pingTimeout: 5000,
+    cookie: false,
+})
+
+io.on("connection", (sock) => {
     console.log("Client Connected")
     let room = {
         id: uuid.v4(),
