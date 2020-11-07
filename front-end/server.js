@@ -48,6 +48,7 @@ const generateBoard = (width, height) => {
 
 let lobbies = []
 let connections = []
+let isVirusTurn = false;
 
 const server = require("http").createServer(app);
 const io = require("socket.io")(server, {
@@ -78,47 +79,60 @@ io.on("connection", (sock) => {
         lobby.isStarted = true;
     }
     sock.join(`${lobby.id}`, () => console.log(`Client room: ${Object.keys(sock.rooms)}`))
-    sock.send(JSON.stringify(lobby))
+    sock.send(JSON.stringify({
+        ...lobby,
+        player: lobby.players - 1
+    }))
 
     sock.on("placewall", data => {
-        let roomid = data.roomid
-        let lobby = lobbies.filter((lobby) => lobby.id === roomid)[0]
-        if (!lobby) {
-            sock.send("Game Closed.")
-            return
-        }
-        if (lobby.board[data.x][data.y] === "Empty") {
-            lobby.board[data.x][data.y] = "Wall"
-            let players = connections.filter(conn => conn.roomid === roomid)
-            players.forEach(player => {
-                player.socket.emit("updateboard", JSON.stringify(lobby))
-            })
-            return
-        } else {
-            sock.send("Invalid Position.")
+        if (!isVirusTurn) {
+            let roomid = data.roomid
+            let lobby = lobbies.filter((lobby) => lobby.id === roomid)[0]
+            if (!lobby) {
+                sock.send("Game Closed.")
+                return
+            }
+            if (lobby.board[data.x][data.y] === "Empty") {
+                lobby.board[data.x][data.y] = "Wall"
+                let players = connections.filter(conn => conn.roomid === roomid)
+                players.forEach(player => {
+                    player.socket.emit("updateboard", JSON.stringify(lobby))
+                })
+                isVirusTurn = true
+                return
+            } else {
+                sock.send("Invalid Position.")
+                return
+            }
         }
     })
     sock.on("movevirus", data => {
-        let roomid = data.roomid
-        let lobby = lobbies.filter((lobby) => lobby.id === roomid)[0]
-        if (!lobby) {
-            sock.send("Game Closed.")
-            return
-        }
-        if (lobby.board[data.x][data.y] === "Empty") {
-            for (let row of lobby.board) {
-                for (let cell of row) {
-                    if (cell === "Virus") {
-                        cell = "Empty"
+        if (isVirusTurn) {
+            let roomid = data.roomid
+            let lobby = lobbies.filter((lobby) => lobby.id === roomid)[0]
+            if (!lobby) {
+                sock.send("Game Closed.")
+                return
+            }
+            if (lobby.board[data.x][data.y] === "Empty") {
+                for (let row of lobby.board) {
+                    for (let cell of row) {
+                        if (cell === "Virus") {
+                            cell = "Empty"
+                        }
                     }
                 }
+                lobby.board[data.x][data.y] = "Virus"
+                let players = connections.filter(conn => conn.roomid === roomid)
+                players.forEach(player => {
+                    player.socket.emit("updateboard", JSON.stringify(lobby))
+                })
+                isVirusTurn = false
+                return
+            } else {
+                sock.send("Invalid Position.")
+                return
             }
-            lobby.board[data.x][data.y] = "Virus"
-            let players = connections.filter(conn => conn.roomid === roomid)
-            players.forEach(player => {
-                player.socket.emit("updateboard", JSON.stringify(lobby))
-            })
-            return
         } else {
             sock.send("Invalid Position.")
         }
