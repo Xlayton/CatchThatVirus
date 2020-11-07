@@ -118,7 +118,6 @@ io.on("connection", (sock) => {
             players.forEach(player => {
                 player.socket.emit("updateboard", JSON.stringify(lobby))
             })
-            console.log(lobby.board)
             return
         } else {
             sock.send("Invalid Position.")
