@@ -4,7 +4,7 @@ const boardHeight = document.getElementById("boardHeight")
 const createBtn = document.getElementById("createLobbyBtn")
 
 function urlId(id) {
-    window.location.replace(`http://${window.origin}/game?id=${id}`);
+    window.location.replace(`http://${window.origin}/game.html?id=${id}`);
 }
 
 createBtn.addEventListener("click", () => {
