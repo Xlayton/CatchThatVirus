@@ -164,6 +164,9 @@ io.on("connection", (sock) => {
             sock.emit("error", "It is not your turn")
         }
     })
+    sock.on("disconnect", () => {
+        lobby.players--;
+    })
 })
 
 server.listen(3000, () => {
