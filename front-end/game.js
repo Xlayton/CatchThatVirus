@@ -1,12 +1,14 @@
 const canvas = document.getElementById("gameCanvas")
 const ctx = canvas.getContext("2d")
-const socket = io('http://localhost:3000', { path : "/game"});
-socket.on("message", data =>  {
+const socket = io(`http://localhost:3000`, {
+    path: '/game',
+});
+socket.on("message", data => {
     console.log(data)
     console.log("CORS sucks ass")
 });
-function getBoard()
-{
+
+function getBoard() {
     var myImage = new Image();
     myImage.src = './Images/cat.png';
     ctx.drawImage(myImage, 0, 0, 150, 180);
