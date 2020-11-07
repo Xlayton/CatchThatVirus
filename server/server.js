@@ -4,7 +4,14 @@ const cors = require("cors")
 const app = express();
 app.use(cors())
 const server = require("http").Server(app);
-const io = require("socket.io")(server)
+const io = require("socket.io")(server, {
+    path: "/game",
+    serveClient: false,
+    // below are engine.IO options
+    pingInterval: 10000,
+    pingTimeout: 5000,
+    cookie: false
+})
 
 const BOARD_WIDTH = 15
 const BOARD_HEIGHT = 15
