@@ -27,7 +27,7 @@ app.route("/api/lobbies")
         res.send(JSON.stringify(lobbies))
     })
     .get((req, res) => {
-        res.send(JSON.stringify(lobbies))
+        res.send(JSON.stringify(lobbies.filter(lobby => lobby.isOpen)))
     })
 
 const generateBoard = (width, height) => {
@@ -88,8 +88,8 @@ io.on("connection", (sock) => {
         if (!isVirusTurn) {
             let roomid = data.roomid
             let lobby = lobbies.filter((lobby) => lobby.id === roomid)[0]
-            if (!lobby) {
-                sock.emit("error", "Game Closed.")
+            if (!lobby || !lobby.isStarted) {
+                sock.emit("error", "Game is closed or not started.")
                 return
             }
             if (lobby.board[data.x][data.y] === "Empty") {
@@ -107,7 +107,10 @@ io.on("connection", (sock) => {
                             }
                         }
                     }
-                    if (lobby.board[virusX + 1][virusY] === "Wall" && lobby.board[virusX + 1][virusY - 1] === "Wall" && lobby.board[virusX + 1][virusY + 1] === "Wall" && lobby.board[virusX - 1][virusY] === "Wall" && lobby.board[virusX - 1][virusY - 1] === "Wall" && lobby.board[virusX - 1][virusY + 1] === "Wall" && lobby.board[virusX][virusY - 1] === "Wall" && lobby.board[virusX][virusY + 1] === "Wall") player.socket.emit("gameover", "Vaccine")
+                    if (lobby.board[virusX + 1][virusY] === "Wall" && lobby.board[virusX + 1][virusY - 1] === "Wall" && lobby.board[virusX + 1][virusY + 1] === "Wall" && lobby.board[virusX - 1][virusY] === "Wall" && lobby.board[virusX - 1][virusY - 1] === "Wall" && lobby.board[virusX - 1][virusY + 1] === "Wall" && lobby.board[virusX][virusY - 1] === "Wall" && lobby.board[virusX][virusY + 1] === "Wall") {
+                        player.socket.emit("gameover", "Vaccine")
+                        lobby.isStarted = false
+                    }
                 })
                 isVirusTurn = true
                 return
@@ -115,14 +118,16 @@ io.on("connection", (sock) => {
                 sock.emit("error", "Invalid Position.")
                 return
             }
+        } else {
+            sock.emit("error", "It is not your turn")
         }
     })
     sock.on("movevirus", data => {
         if (isVirusTurn) {
             let roomid = data.roomid
             let lobby = lobbies.filter((lobby) => lobby.id === roomid)[0]
-            if (!lobby) {
-                sock.emit("error", "Game Closed.")
+            if (!lobby || !lobby.isStarted) {
+                sock.emit("error", "Game is closed or not started.")
                 return
             }
             let newX = data.x;
@@ -144,7 +149,10 @@ io.on("connection", (sock) => {
                 let players = connections.filter(conn => conn.roomid === roomid)
                 players.forEach(player => {
                     player.socket.emit("updateboard", JSON.stringify(lobby))
-                    if (!lobby.board[data.x + 1][data.y] || !lobby.board[data.x - 1][data.y] || !lobby.board[data.x][data.y + 1] || !lobby.board[data.x][data.y - 1]) player.socket.emit("gameover", "Virus")
+                    if (!lobby.board[data.x + 1] || !lobby.board[data.x - 1] || !lobby.board[data.x][data.y + 1] || !lobby.board[data.x][data.y - 1]) {
+                        player.socket.emit("gameover", "Virus")
+                        lobby.isStarted = false
+                    }
                 })
                 isVirusTurn = false
                 return
@@ -152,6 +160,8 @@ io.on("connection", (sock) => {
                 sock.emit("error", "Invalid Position.")
                 return
             }
+        } else {
+            sock.emit("error", "It is not your turn")
         }
     })
 })
