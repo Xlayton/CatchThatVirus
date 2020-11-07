@@ -2,6 +2,10 @@ const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 var turn;
 var board;
+var roomid;
+var player;
+var vaccineImage = new Image(100, 100);
+vaccineImage.src = './Images/vaccine.png';
 var virusImage = new Image(100, 100);
 virusImage.src = './Images/virus.png';
 canvas.width = window.innerWidth;
@@ -12,17 +16,22 @@ canvas.addEventListener("click", function(e) {
 const socket = io(`${location.origin}`, {
     path: '/game',
     query: {
-        roomid: "cd2af54b-0753-402d-983b-78ef55d6ea3e"
+        roomid: "36c2781e-c653-4a1d-9f46-56c098d16b57"
     }
 });
 socket.on("message", data => {
-    board = data.board;
+    let rawBoard = JSON.parse(data);
+    roomid = rawBoard.id
+    board = rawBoard.board
     getBoard()
 });
-
+socket.on("updateboard", data =>  {
+    let rawBoard = JSON.parse(data);
+    roomid = rawBoard.id
+    board = rawBoard.board
+    getBoard()
+})
 function getBoard() {
-    var grassImage = new Image(100, 100);
-    grassImage.src = './Images/index.jpg';
     var size = (canvas.width / board.length) > (canvas.height / board[0].length) ? (canvas.height / board[0].length) : (canvas.width / board.length);
      for(let i = 0; i < board.length; i++)
      {
@@ -34,7 +43,13 @@ function getBoard() {
             }
             else if(board[i][i2] == "Virus")
             {
+                ctx.strokeRect((i*size), (i2*size), size, size);
                 ctx.drawImage(virusImage, (i*size), (i2*size), size, size);
+             }
+             else if(board[i][i2] == "Wall")
+             {
+                ctx.strokeRect((i*size), (i2*size), size, size);
+                ctx.drawImage(vaccineImage, (i*size), (i2*size), size, size);
              }
          }         
      }
@@ -45,13 +60,5 @@ function clicked(event) {
     var size = (canvas.width / board.length) > (canvas.height / board[0].length) ? (canvas.height / board[0].length) : (canvas.width / board.length);
     var x = Math.floor((mouseX/size))
     var y = Math.floor((mouseY/size))
-    console.log(x)
-    console.log(y)
-    console.log(board[x][y])
-    if(board[x][y] == "Empty")
-    {
-        console.log("hello")
-        board[x][y] == "Pillar"
-        ctx.drawImage(virusImage, (x*size), (y*size), size, size);
-    }
+    socket.emit("movevirus", { x : x, y : y, roomid : roomid})
 }
