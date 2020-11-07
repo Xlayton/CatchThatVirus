@@ -3,6 +3,10 @@ const boardWidth = document.getElementById("boardWidth")
 const boardHeight = document.getElementById("boardHeight")
 const createBtn = document.getElementById("createLobbyBtn")
 
+function urlId(id) {
+    window.location.replace(`http://localhost:3000/?id=${id}`);
+}
+
 createBtn.addEventListener("click", () => {
     fetch(`${location.origin}/api/lobbies`, {
             method: "POST",
@@ -31,7 +35,7 @@ createBtn.addEventListener("click", () => {
                 lobbyId.classList.add("lobby-id")
                 let joinBtn = document.createElement("button")
                 joinBtn.innerText = "Join"
-                joinBtn.addEventListener("click", () => console.log(element.id))
+                joinBtn.addEventListener("click", () => urlId(element.id))
                 joinBtn.classList.add("join-lobby-btn")
                 lobby.append(lobbyName, lobbyId, joinBtn)
                 document.getElementById("lobbyList").append(lobby)

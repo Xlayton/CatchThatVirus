@@ -13,6 +13,10 @@ canvas.height = window.innerHeight;
 canvas.addEventListener("click", function (e) {
     clicked(e)
 })
+let reg = /(?<=id=)([^/\&\?]*)(?<![\/?\&?\??])/;
+let myUrl = window.location.href.match(reg);
+console.log(myUrl);
+
 const socket = io(`${location.origin}`, {
     path: '/game',
     query: {
