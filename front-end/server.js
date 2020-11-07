@@ -1,12 +1,34 @@
 const uuid = require("uuid")
-const express = require("express")
+const express = require("express");
+const bodyParser = require("body-parser")
+const {
+    allowedNodeEnvironmentFlags
+} = require("process");
 
 const app = express();
-const cors = require("cors")
-app.use(express.static(`${__dirname}`), cors())
+app.use(express.static(`${__dirname}`), bodyParser.json())
 
-const BOARD_WIDTH = 15
-const BOARD_HEIGHT = 15
+app.route("/api/lobbies")
+    .post((req, res) => {
+        let {
+            name,
+            boardwidth,
+            boardheight
+        } = req.body
+        let room = {
+            id: uuid.v4(),
+            name: name,
+            isOpen: true,
+            isStarted: false,
+            players: 0,
+            board: generateBoard(boardwidth, boardheight)
+        }
+        lobbies.push(room)
+        res.send(JSON.stringify(lobbies))
+    })
+    .get((req, res) => {
+        res.send(JSON.stringify(lobbies))
+    })
 
 const generateBoard = (width, height) => {
     board = [];
@@ -33,27 +55,65 @@ const io = require("socket.io")(server, {
     pingInterval: 10000,
     pingTimeout: 5000,
     cookie: false,
-    "origins": "*:*",
-    handlePreflightRequest: (req, res) => {
-        const headers = {
-            "Access-Control-Allow-Headers": "Content-Type, Authorization",
-            "Access-Control-Allow-Origin": req.headers.origin, //or the specific origin you want to give access to,
-            "Access-Control-Allow-Credentials": true
-        };
-        res.writeHead(200, headers);
-        res.end();
-    }
 })
 
 io.on("connection", (sock) => {
-    console.log("Client Connected")
-    let room = {
-        id: uuid.v4(),
-        isOpen: true,
-        board: generateBoard(BOARD_HEIGHT, BOARD_HEIGHT)
+    console.log("Client Attemping Connection...")
+    let roomid = sock.handshake.query.roomid
+    let lobby = lobbies.filter((lobby) => lobby.id === roomid)[0]
+    if (!lobby || lobby.players >= 2) {
+        console.log(`Client send invalid room id: ${roomid}`)
+        console.log(`All Lobbies: ${lobbies.map(lobby => lobby.id)}`)
+        sock.disconnect()
+        return
     }
-    lobbies.push(room)
-    sock.send(room)
+    lobby.players = lobby.players + 1
+    if (lobby.players >= 2) {
+        lobby.isOpen = false;
+        lobby.isStarted = true;
+    }
+    sock.join(`${lobby.id}`, () => console.log(`Client room: ${Object.keys(sock.rooms)}`))
+    sock.send(JSON.stringify(lobby))
+
+    sock.on("placewall", data => {
+        let roomid = data.roomid
+        let lobby = lobbies.filter((lobby) => lobby.id === roomid)[0]
+        if (!lobby) {
+            sock.send("Game Closed.")
+            return
+        }
+        if (lobby.board[data.x][data.y] === "Empty") {
+            lobby.board[data.x][data.y] = "Wall"
+            sock.emit("updateboard", JSON.stringify(lobby))
+            console.log(lobby.board)
+            return
+        } else {
+            sock.send("Invalid Position.")
+        }
+    })
+    sock.on("movevirus", data => {
+        let roomid = data.roomid
+        let lobby = lobbies.filter((lobby) => lobby.id === roomid)[0]
+        if (!lobby) {
+            sock.send("Game Closed.")
+            return
+        }
+        if (lobby.board[data.x][data.y] === "Empty") {
+            for (let row of lobby.board) {
+                for (let cell of row) {
+                    if (cell === "Virus") {
+                        cell = "Empty"
+                    }
+                }
+            }
+            lobby.board[data.x][data.y] = "Virus"
+            sock.emit("updateboard", JSON.stringify(lobby))
+            console.log(lobby.board)
+            return
+        } else {
+            sock.send("Invalid Position.")
+        }
+    })
 })
 
 server.listen(3000, () => {
