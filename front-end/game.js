@@ -2,6 +2,9 @@ const canvas = document.getElementById("gameCanvas")
 const ctx = canvas.getContext("2d")
 const socket = io(`${location.origin}`, {
     path: '/game',
+    query: {
+        roomid: "cd2af54b-0753-402d-983b-78ef55d6ea3e"
+    }
 });
 socket.on("message", data => {
     console.log(data)
