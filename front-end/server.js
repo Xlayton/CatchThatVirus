@@ -115,16 +115,19 @@ io.on("connection", (sock) => {
                 return
             }
             if (lobby.board[data.x][data.y] === "Empty") {
-                for (let row of lobby.board) {
-                    for (let cell of row) {
-                        if (cell === "Virus") {
-                            cell = "Empty"
+                for (let w = 0; w < lobby.board.length; w++) {
+                    for (let h = 0; h < lobby.board[0].length; h++) {
+                        if (lobby.board[w][h] === "Virus") {
+                            lobby.board[w][h] = "Empty"
                         }
                     }
                 }
+                console.log(lobby.board)
                 lobby.board[data.x][data.y] = "Virus"
                 let players = connections.filter(conn => conn.roomid === roomid)
+                console.log(lobby.board)
                 players.forEach(player => {
+                    console.log(lobby)
                     player.socket.emit("updateboard", JSON.stringify(lobby))
                 })
                 isVirusTurn = false
