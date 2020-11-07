@@ -16,7 +16,7 @@ canvas.addEventListener("click", function (e) {
 const socket = io(`${location.origin}`, {
     path: '/game',
     query: {
-        roomid: "9e5da705-3101-44c8-9343-76cd6894b5b7"
+        roomid: "38c399eb-348b-4912-a436-28d9f6f22396"
     }
 });
 socket.on("message", data => {
@@ -24,12 +24,13 @@ socket.on("message", data => {
     try {
         rawBoard = JSON.parse(data);
     } catch (e) {
-        console.log("dont :)")
+        console.log("eror in message")
         return
     }
     roomid = rawBoard.id
     board = rawBoard.board
     player = rawBoard.player
+    turn = 1;
     getBoard()
 });
 socket.on("updateboard", data => {
@@ -37,15 +38,35 @@ socket.on("updateboard", data => {
     try {
         rawBoard = JSON.parse(data);
     } catch (e) {
-        console.log("dont :)")
+        console.log("error updating board");
         return
     }
-    roomid = rawBoard.id
-    board = rawBoard.board
-    getBoard()
+    roomid = rawBoard.id;
+    board = rawBoard.board;
+    getBoard();
 })
+socket.on("error", data => {
+    document.getElementById("errortext").style.visibility = "hidden";
+    document.getElementById("errortext").innerHTML = "ITS NOT YOUR TURN!";
+    document.getElementById("errortext").style.visibility = "visible";
 
+})
 function getBoard() {
+    var newText;
+    if(player == turn)
+    {
+        newText = "Its your turn!";
+    }
+    else if(turn == 0 && player != 0)
+    {
+        newText = "It's the virus's turn";
+    }
+    else if(turn == 1 && player != 1)
+    {
+        newText = "It's the vaccine's turn";
+    }
+    document.getElementById("turntext").innerHTML = newText;
+    turn = turn == 0 ? 1 : 0;
     var size = (canvas.width / board.length) > (canvas.height / board[0].length) ? (canvas.height / board[0].length) : (canvas.width / board.length);
     for (let i = 0; i < board.length; i++) {
         for (let i2 = 0; i2 < board[i].length; i2++) {
