@@ -1,6 +1,6 @@
 const canvas = document.getElementById("gameCanvas")
 const ctx = canvas.getContext("2d")
-const socket = io(`http://localhost:3000`, {
+const socket = io(`${location.origin}`, {
     path: '/game',
 });
 socket.on("message", data => {

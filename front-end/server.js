@@ -3,7 +3,7 @@ const express = require("express")
 
 const app = express();
 const cors = require("cors")
-app.use(express.static(`${__dirname}/../front-end`), cors())
+app.use(express.static(`${__dirname}`), cors())
 
 const BOARD_WIDTH = 15
 const BOARD_HEIGHT = 15
@@ -33,6 +33,16 @@ const io = require("socket.io")(server, {
     pingInterval: 10000,
     pingTimeout: 5000,
     cookie: false,
+    "origins": "*:*",
+    handlePreflightRequest: (req, res) => {
+        const headers = {
+            "Access-Control-Allow-Headers": "Content-Type, Authorization",
+            "Access-Control-Allow-Origin": req.headers.origin, //or the specific origin you want to give access to,
+            "Access-Control-Allow-Credentials": true
+        };
+        res.writeHead(200, headers);
+        res.end();
+    }
 })
 
 io.on("connection", (sock) => {
