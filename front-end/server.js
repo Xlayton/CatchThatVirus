@@ -62,7 +62,7 @@ io.on("connection", (sock) => {
     console.log("Client Attemping Connection...")
     let roomid = sock.handshake.query.roomid
     let lobby = lobbies.filter((lobby) => lobby.id === roomid)[0]
-    if (!lobby || lobby.players >= 2) {
+    if (!lobby) {
         console.log(`Client send invalid room id: ${roomid}`)
         console.log(`All Lobbies: ${lobbies.map(lobby => lobby.id)}`)
         sock.disconnect()
