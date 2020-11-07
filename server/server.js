@@ -1,7 +1,6 @@
 const uuid = require("uuid")
 const express = require("express")
 const app = express();
-app.get("/", (req, res) => res.send(generateBoard(15, 15)))
 const server = require("http").Server(app);
 const io = require("socket.io")(server)
 
