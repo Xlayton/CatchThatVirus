@@ -8,8 +8,8 @@ var vaccineImage = new Image(100, 100);
 vaccineImage.src = './Images/vaccine.png';
 var virusImage = new Image(100, 100);
 virusImage.src = './Images/virus.png';
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+canvas.width = canvas.parentElement.clientWidth/2;
+canvas.height = canvas.parentElement.clientHeight;
 canvas.addEventListener("click", function (e) {
     clicked(e)
 })
@@ -105,11 +105,6 @@ function clicked(event) {
     var size = (canvas.width / board.length) > (canvas.height / board[0].length) ? (canvas.height / board[0].length) : (canvas.width / board.length);
     var x = Math.floor((mouseX / size));
     var y = Math.floor((mouseY / size));
-    console.log("size = " + size);
-    console.log("mouse x = " + mouseX);
-    console.log("mouse y = " + mouseY);
-    console.log("x = " + x);
-    console.log("y = " + y);
     if (player == 0) {
         socket.emit("movevirus", {
             x: x,
