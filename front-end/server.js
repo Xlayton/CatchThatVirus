@@ -47,6 +47,7 @@ const generateBoard = (width, height) => {
 
 
 let lobbies = []
+let connections = []
 
 const server = require("http").createServer(app);
 const io = require("socket.io")(server, {
@@ -67,6 +68,10 @@ io.on("connection", (sock) => {
         sock.disconnect()
         return
     }
+    connections.push({
+        roomid: roomid,
+        socket: sock
+    })
     lobby.players = lobby.players + 1
     if (lobby.players >= 2) {
         lobby.isOpen = false;
@@ -84,8 +89,10 @@ io.on("connection", (sock) => {
         }
         if (lobby.board[data.x][data.y] === "Empty") {
             lobby.board[data.x][data.y] = "Wall"
-            sock.emit("updateboard", JSON.stringify(lobby))
-            console.log(lobby.board)
+            let players = connections.filter(conn => conn.roomid === roomid)
+            players.forEach(player => {
+                player.socket.emit("updateboard", JSON.stringify(lobby))
+            })
             return
         } else {
             sock.send("Invalid Position.")
@@ -107,7 +114,10 @@ io.on("connection", (sock) => {
                 }
             }
             lobby.board[data.x][data.y] = "Virus"
-            sock.emit("updateboard", JSON.stringify(lobby))
+            let players = connections.filter(conn => conn.roomid === roomid)
+            players.forEach(player => {
+                player.socket.emit("updateboard", JSON.stringify(lobby))
+            })
             console.log(lobby.board)
             return
         } else {
