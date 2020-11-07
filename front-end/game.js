@@ -20,7 +20,7 @@ console.log(myUrl);
 const socket = io(`${location.origin}`, {
     path: '/game',
     query: {
-        roomid: "017111b0-5620-4658-bb7d-98932b46d30e"
+        roomid: myUrl[0]
     }
 });
 socket.on("message", data => {
@@ -31,6 +31,7 @@ socket.on("message", data => {
         console.log("error in message")
         return
     }
+    document.getElementById("wintext").style.visibility = "hidden";
     roomid = rawBoard.id
     board = rawBoard.board
     player = rawBoard.player
@@ -56,7 +57,8 @@ socket.on("error", data => {
     document.getElementById("errortext").style.visibility = "visible";
 })
 socket.on("gameover", data => {
-    console.log(`${data} Wins!`)
+    document.getElementById("wintext").innerHTML = `${data} wins`;
+    document.getElementById("wintext").style.visibility = "visible";
 })
 function getBoard() {
     var newText;
@@ -97,8 +99,9 @@ function getBoard() {
 }
 
 function clicked(event) {
-    mouseX = event.clientX;
-    mouseY = event.clientY;
+    var rect = canvas.getBoundingClientRect();
+    mouseX = event.clientX - rect.left;
+    mouseY = event.clientY - rect.top;
     var size = (canvas.width / board.length) > (canvas.height / board[0].length) ? (canvas.height / board[0].length) : (canvas.width / board.length);
     var x = Math.floor((mouseX / size));
     var y = Math.floor((mouseY / size));
