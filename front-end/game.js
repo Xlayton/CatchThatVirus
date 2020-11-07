@@ -1,26 +1,73 @@
-const canvas = document.getElementById("gameCanvas")
-const ctx = canvas.getContext("2d")
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+var turn;
+var board;
+var roomid;
+var player;
+var vaccineImage = new Image(100, 100);
+vaccineImage.src = './Images/vaccine.png';
+var virusImage = new Image(100, 100);
+virusImage.src = './Images/virus.png';
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+canvas.addEventListener("click", function(e) {
+    clicked(e)
+})
 const socket = io(`${location.origin}`, {
     path: '/game',
     query: {
-        roomid: "cd2af54b-0753-402d-983b-78ef55d6ea3e"
+        roomid: "36c2781e-c653-4a1d-9f46-56c098d16b57"
     }
 });
 socket.on("message", data => {
-    console.log(data)
-    console.log("CORS sucks ass")
+    let rawBoard = JSON.parse(data);
+    roomid = rawBoard.id
+    board = rawBoard.board
+    player = rawBoard.player
+    getBoard()
 });
-
+socket.on("updateboard", data =>  {
+    let rawBoard = JSON.parse(data);
+    roomid = rawBoard.id
+    board = rawBoard.board
+    player = rawBoard.player
+    getBoard()
+})
 function getBoard() {
-    var myImage = new Image();
-    myImage.src = './Images/cat.png';
-    ctx.drawImage(myImage, 0, 0, 150, 180);
-    // var board = [15][15]
-    // var i
-    // for(i = 0; i < board.length; i++)
-    // {
-    //     board[i].forEach(element => {
-    //         canvas.drawImage("./Images/cat.png", 0 , 0)
-    //     })
-    // }
+    var size = (canvas.width / board.length) > (canvas.height / board[0].length) ? (canvas.height / board[0].length) : (canvas.width / board.length);
+     for(let i = 0; i < board.length; i++)
+     {
+         for(let i2 = 0; i2 < board[i].length; i2++)
+         {
+             if(board[i][i2] == "Empty")
+             {
+                ctx.strokeRect((i*size), (i2*size), size, size);
+            }
+            else if(board[i][i2] == "Virus")
+            {
+                ctx.strokeRect((i*size), (i2*size), size, size);
+                ctx.drawImage(virusImage, (i*size), (i2*size), size, size);
+             }
+             else if(board[i][i2] == "Wall")
+             {
+                ctx.strokeRect((i*size), (i2*size), size, size);
+                ctx.drawImage(vaccineImage, (i*size), (i2*size), size, size);
+             }
+         }         
+     }
+}
+function clicked(event) {
+    mouseX = event.clientX;
+    mouseY = event.clientY;
+    var size = (canvas.width / board.length) > (canvas.height / board[0].length) ? (canvas.height / board[0].length) : (canvas.width / board.length);
+    var x = Math.floor((mouseX/size))
+    var y = Math.floor((mouseY/size))
+    if(player == 0)
+    {
+        socket.emit("movevirus", { x : x, y : y, roomid : roomid})
+    }
+    else if(player == 1)
+    {
+        socket.emit("placewall", {x : x, y : y, roomid : roomid})
+    }
 }
