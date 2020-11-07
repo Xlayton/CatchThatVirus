@@ -125,11 +125,18 @@ io.on("connection", (sock) => {
                 sock.emit("error", "Game Closed.")
                 return
             }
+            let newX = data.x;
+            let newY = data.y;
             if (lobby.board[data.x][data.y] === "Empty") {
                 for (let w = 0; w < lobby.board.length; w++) {
                     for (let h = 0; h < lobby.board[0].length; h++) {
                         if (lobby.board[w][h] === "Virus") {
-                            lobby.board[w][h] = "Empty"
+                            if (!((Math.abs(Math.abs(w) - Math.abs(newX)) > 1) || (Math.abs(Math.abs(h) - Math.abs(newY)) > 1))) {
+                                lobby.board[w][h] = "Empty"
+                            } else {
+                                sock.emit("error", "Invalid Position.")
+                                return
+                            }
                         }
                     }
                 }
