@@ -23,12 +23,14 @@ socket.on("message", data => {
     let rawBoard = JSON.parse(data);
     roomid = rawBoard.id
     board = rawBoard.board
+    player = rawBoard.player
     getBoard()
 });
 socket.on("updateboard", data =>  {
     let rawBoard = JSON.parse(data);
     roomid = rawBoard.id
     board = rawBoard.board
+    player = rawBoard.player
     getBoard()
 })
 function getBoard() {
@@ -60,5 +62,12 @@ function clicked(event) {
     var size = (canvas.width / board.length) > (canvas.height / board[0].length) ? (canvas.height / board[0].length) : (canvas.width / board.length);
     var x = Math.floor((mouseX/size))
     var y = Math.floor((mouseY/size))
-    socket.emit("movevirus", { x : x, y : y, roomid : roomid})
+    if(player == 0)
+    {
+        socket.emit("movevirus", { x : x, y : y, roomid : roomid})
+    }
+    else if(player == 1)
+    {
+        socket.emit("placewall", {x : x, y : y, roomid : roomid})
+    }
 }
