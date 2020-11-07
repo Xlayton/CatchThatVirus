@@ -1,0 +1,13 @@
+.createLobby {
+    display: flex;
+}
+
+.inputs {
+    flex-grow: 3;
+    display: flex;
+    justify-content: stretch;
+}
+
+.inputs input {
+    width: 100%;
+}
