@@ -49,7 +49,7 @@ app.post("/createroom", (req, res) => {
     res.send(JSON.stringify(lobbies))
 })
 
-io.on("connect", (sock) => {
+io.on("connection", (sock) => {
     console.log("Client Attemping Connection...")
     let roomid = sock.handshake.query.roomid
     let lobby = lobbies.filter((lobby) => lobby.id === roomid)[0]
@@ -64,8 +64,17 @@ io.on("connect", (sock) => {
         lobby.isOpen = false;
         lobby.isStarted = true;
     }
-    sock.join(`${lobby.id}`, () => console.log(`Client rooms: ${Object.keys(sock.rooms)}`))
+    sock.join(`${lobby.id}`, () => console.log(`Client room: ${Object.keys(sock.rooms)}`))
     sock.send(JSON.stringify(lobby))
+
+    sock.on("placewall", data => {
+        console.log(data)
+        console.log(Object.keys(sock.rooms))
+    })
+    sock.on("movevirus", data => {
+        console.log(data)
+        console.log(Object.keys(sock.rooms))
+    })
 })
 
 server.listen(3000, () => {
