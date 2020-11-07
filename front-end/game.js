@@ -16,7 +16,7 @@ canvas.addEventListener("click", function (e) {
 const socket = io(`${location.origin}`, {
     path: '/game',
     query: {
-        roomid: "458f541e-93c4-4f1f-809a-7051f9654528"
+        roomid: "9e5da705-3101-44c8-9343-76cd6894b5b7"
     }
 });
 socket.on("message", data => {
