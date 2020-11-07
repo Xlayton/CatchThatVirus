@@ -1,9 +1,15 @@
 const uuid = require("uuid")
 const express = require("express")
-const cors = require("cors")
 
 const app = express();
-app.use(cors())
+app.use(function (req, res, next) {
+    // Set CORS headers
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Request-Method', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET');
+    res.setHeader('Access-Control-Allow-Headers', '*');
+    next()
+})
 app.use(express.static(`${__dirname}/../front-end`))
 
 const server = require("http").createServer(app);
