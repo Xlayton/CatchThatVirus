@@ -16,7 +16,7 @@ canvas.addEventListener("click", function (e) {
 const socket = io(`${location.origin}`, {
     path: '/game',
     query: {
-        roomid: "38c399eb-348b-4912-a436-28d9f6f22396"
+        roomid: "017111b0-5620-4658-bb7d-98932b46d30e"
     }
 });
 socket.on("message", data => {
@@ -24,7 +24,7 @@ socket.on("message", data => {
     try {
         rawBoard = JSON.parse(data);
     } catch (e) {
-        console.log("eror in message")
+        console.log("error in message")
         return
     }
     roomid = rawBoard.id
@@ -34,6 +34,7 @@ socket.on("message", data => {
     getBoard()
 });
 socket.on("updateboard", data => {
+    document.getElementById("errortext").style.visibility = "hidden";
     let rawBoard;
     try {
         rawBoard = JSON.parse(data);
@@ -46,8 +47,8 @@ socket.on("updateboard", data => {
     getBoard();
 })
 socket.on("error", data => {
-    document.getElementById("errortext").style.visibility = "hidden";
-    document.getElementById("errortext").innerHTML = "ITS NOT YOUR TURN!";
+    console.log("hit an error");
+    document.getElementById("errortext").innerHTML = data;
     document.getElementById("errortext").style.visibility = "visible";
 })
 socket.on("gameover", data => {
@@ -72,7 +73,7 @@ function getBoard() {
     var size = (canvas.width / board.length) > (canvas.height / board[0].length) ? (canvas.height / board[0].length) : (canvas.width / board.length);
     for (let i = 0; i < board.length; i++) {
         for (let i2 = 0; i2 < board[i].length; i2++) {
-            ctx.fillStyle = "#FFF"
+            ctx.fillStyle = "#FFF";
             ctx.fillRect((i * size), (i2 * size), size, size);
         }
     }
@@ -95,19 +96,24 @@ function clicked(event) {
     mouseX = event.clientX;
     mouseY = event.clientY;
     var size = (canvas.width / board.length) > (canvas.height / board[0].length) ? (canvas.height / board[0].length) : (canvas.width / board.length);
-    var x = Math.floor((mouseX / size))
-    var y = Math.floor((mouseY / size))
+    var x = Math.floor((mouseX / size));
+    var y = Math.floor((mouseY / size));
+    console.log("size = " + size);
+    console.log("mouse x = " + mouseX);
+    console.log("mouse y = " + mouseY);
+    console.log("x = " + x);
+    console.log("y = " + y);
     if (player == 0) {
         socket.emit("movevirus", {
             x: x,
             y: y,
             roomid: roomid
-        })
+        });
     } else if (player == 1) {
         socket.emit("placewall", {
             x: x,
             y: y,
             roomid: roomid
-        })
+        });
     }
 }
