@@ -2,24 +2,8 @@ const uuid = require("uuid")
 const express = require("express")
 
 const app = express();
-app.use(express.static(`${__dirname}/../front-end`))
-app.use(function (req, res, next) {
-    res.header("Access-Control-Allow-Origin", "https://www.differentServerDomain.fr https://www.differentServerDomain.fr");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    next();
-});
-
-const server = require("http").createServer(app);
-
-const io = require("socket.io")(server, {
-    path: "/game",
-    serveClient: false,
-    // below are engine.IO options
-    pingInterval: 10000,
-    pingTimeout: 5000,
-    cookie: false,
-    origins: 'localhost:* 127.0.0.1:*'
-})
+const cors = require("cors")
+app.use(express.static(`${__dirname}`), cors())
 
 const BOARD_WIDTH = 15
 const BOARD_HEIGHT = 15
@@ -42,7 +26,26 @@ const generateBoard = (width, height) => {
 
 let lobbies = []
 
-io.on("connect", (sock) => {
+const server = require("http").createServer(app);
+const io = require("socket.io")(server, {
+    path: "/game",
+    serveClient: false,
+    pingInterval: 10000,
+    pingTimeout: 5000,
+    cookie: false,
+    "origins": "*:*",
+    handlePreflightRequest: (req, res) => {
+        const headers = {
+            "Access-Control-Allow-Headers": "Content-Type, Authorization",
+            "Access-Control-Allow-Origin": req.headers.origin, //or the specific origin you want to give access to,
+            "Access-Control-Allow-Credentials": true
+        };
+        res.writeHead(200, headers);
+        res.end();
+    }
+})
+
+io.on("connection", (sock) => {
     console.log("Client Connected")
     let room = {
         id: uuid.v4(),
