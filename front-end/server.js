@@ -21,6 +21,7 @@ app.route("/api/lobbies")
             isOpen: true,
             isStarted: false,
             players: 0,
+            isVirusTurn: false,
             board: generateBoard(boardwidth, boardheight)
         }
         lobbies.push(room)
@@ -48,7 +49,6 @@ const generateBoard = (width, height) => {
 
 let lobbies = []
 let connections = []
-let isVirusTurn = false;
 
 const server = require("http").createServer(app);
 const io = require("socket.io")(server, {
@@ -85,13 +85,13 @@ io.on("connection", (sock) => {
     }))
 
     sock.on("placewall", data => {
-        if (!isVirusTurn) {
-            let roomid = data.roomid
-            let lobby = lobbies.filter((lobby) => lobby.id === roomid)[0]
-            if (!lobby || !lobby.isStarted) {
-                sock.emit("error", "Game is closed or not started.")
-                return
-            }
+        let roomid = data.roomid
+        let lobby = lobbies.filter((lobby) => lobby.id === roomid)[0]
+        if (!lobby || !lobby.isStarted) {
+            sock.emit("error", "Game is closed or not started.")
+            return
+        }
+        if (!lobby.isVirusTurn) {
             if (lobby.board[data.x][data.y] === "Empty") {
                 lobby.board[data.x][data.y] = "Wall"
                 let players = connections.filter(conn => conn.roomid === roomid)
@@ -123,13 +123,13 @@ io.on("connection", (sock) => {
         }
     })
     sock.on("movevirus", data => {
-        if (isVirusTurn) {
-            let roomid = data.roomid
-            let lobby = lobbies.filter((lobby) => lobby.id === roomid)[0]
-            if (!lobby || !lobby.isStarted) {
-                sock.emit("error", "Game is closed or not started.")
-                return
-            }
+        let roomid = data.roomid
+        let lobby = lobbies.filter((lobby) => lobby.id === roomid)[0]
+        if (!lobby || !lobby.isStarted) {
+            sock.emit("error", "Game is closed or not started.")
+            return
+        }
+        if (lobby.isVirusTurn) {
             let newX = data.x;
             let newY = data.y;
             if (lobby.board[data.x][data.y] === "Empty") {
