@@ -112,7 +112,7 @@ io.on("connection", (sock) => {
                         lobby.isStarted = false
                     }
                 })
-                isVirusTurn = true
+                lobby.isVirusTurn = true
                 return
             } else {
                 sock.emit("error", "Invalid Position.")
@@ -154,7 +154,7 @@ io.on("connection", (sock) => {
                         lobby.isStarted = false
                     }
                 })
-                isVirusTurn = false
+                lobby.isVirusTurn = false
                 return
             } else {
                 sock.emit("error", "Invalid Position.")
