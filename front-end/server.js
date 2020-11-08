@@ -25,7 +25,7 @@ app.route("/api/lobbies")
             board: generateBoard(boardwidth, boardheight)
         }
         lobbies.push(room)
-        res.send(JSON.stringify(lobbies))
+        res.send(JSON.stringify(lobbies.filter(lobby => lobby.isOpen)))
     })
     .get((req, res) => {
         res.send(JSON.stringify(lobbies.filter(lobby => lobby.isOpen)))
