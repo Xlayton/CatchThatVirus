@@ -4,15 +4,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Oxygen&display=swap" rel="stylesheet">
     <title>Lobbies</title>
-    <link rel="stylesheet" type="text/css" href="styles.css">
+    <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 
 <body>
     <nav>
         <a href="/">Home</a>
         <a href="/lobbies.html">Lobbies</a>
-        <a href="/about">About Us</a>
     </nav>
     <section class="lobbies">
         <article class="createLobby">
@@ -23,8 +23,8 @@
                 <input required placeholder="Board Height (10-50)..." type="number" min="10" max="50" id="boardHeight"
                     class="text-input" />
             </section>
-            <button class="btn" id="createLobbyBtn">Create Lobby...</button>
         </article>
+        <button class="btn" id="createLobbyBtn">Create Lobby...</button>
         <section id="lobbyList"></section>
     </section>
     <script src="lobbies.js"></script>

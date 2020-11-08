@@ -4,21 +4,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Oxygen&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <title>Document</title>
 </head>
-<body>
+<body class="gameBody">
     <nav>
         <a href="/">Home</a>
         <a href="/lobbies.html">Lobbies</a>
-        <a href="/team.html">About Us</a>
     </nav>
     <img id="catimg" src="./Images/cat.png" hidden>
     <img id="virusimg" src="./Images/virus.png" hidden>
     <img id="grassimg" src="./Images/index.jpg" hidden>
-    <p class= "turn" id="turntext"></p>
-    <p class="win" id="wintext"></p>
-    <p class="error" id="errortext"></p>
+    <p class= "turn gameText" id="turntext"></p>
+    <p class="win gameText" id="wintext"></p>
+    <p class="error gameText" id="errortext"></p>
     <div id="canvasdiv">
     <canvas id="gameCanvas"></canvas>
     </div>

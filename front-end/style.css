@@ -4,6 +4,7 @@ html, body {
     height: 100%;
     margin: 0;
     padding: 0;
+    font-family: 'Oxygen', sans-serif;
 }
 .welcomeTitle {
     display: flex;
@@ -32,8 +33,8 @@ canvas {
     border: 10px solid black;
 }
 
-img {
-    border: 5px solid rgb(216, 103, 10);
+.teamImg {
+    border: 5px solid #000;
 }
 
 .cursedTitle {
@@ -68,7 +69,7 @@ img {
 /* Nav bar */
 nav {
     display: flex;
-    background-color: #555555;
+    background-color: #454545;
 }
 
 nav a {
@@ -77,6 +78,136 @@ nav a {
     margin: 10px;
 }
 
-nav a:hover {
+/* nav a:hover {
+    background-color: #616161;
+} */
+
+/* Homepage */
+.homePage {
+    background-color: #efefef;
+}
+
+.infoDiv {
+    background-color: #efefef;
+    color: #000;
+}
+
+#infoHeader {
+    display: flex;
+    justify-content: center;
+    font-size: 20px;
+}
+
+.playBtn {
+    display: flex;
+    justify-self: center;
     background-color: #454545;
+    border: none;
+    color: #fff;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    margin-left: 8px;
+    cursor: pointer;
+    border-radius: 12px;
+    width: 99%;
+}
+
+/* Lobby */
+input[type=email], input[type=number], input[type=text] {
+    width: 98%;
+    padding: 15px;
+    /* margin: 5px 0 22px 0; */
+    display: inline-block;
+    border: 1px solid black;
+    background: #f1f1f1;
+}
+
+input[type=text]:focus, input[type=number]:focus {
+    background-color: #ddd;
+    outline: none;
+}
+
+#loginButton {
+    display: flex;
+    justify-content: center;
+    background-color: rgb(216, 103, 10);
+    border: none;
+    color: black;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 12px;
+    width: 100%;
+}
+
+#loginTitle {
+    display: flex;
+    justify-content: center;
+}
+
+#registerLink {
+    text-decoration: underline;
+    color: white;
+}
+
+#createLobbyBtn {
+    padding: 15px;
+    background-color: #454545;
+    color: white;
+    text-decoration: none;
+    width: 100%;
+}
+
+/* Lobby creation */
+#lobbyList div{
+    display: flex;
+    justify-content: space-between;
+    width: 98%;
+    align-items: center;
+}
+
+#lobbyList div:not(:first-child) {
+    border-top: 1px solid black;
+}
+
+#lobbyList {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    margin-left: 5px;
+}
+
+.join-lobby-btn {
+    height: 50%;
+    display: flex;
+    justify-self: center;
+    background-color: #454545;
+    border: none;
+    color: #fff;
+    text-align: center;
+    text-decoration: none;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+/* error */
+#errortext {
+    color: #f00;
+    font-style: italic;
+}
+
+.gameBody {
+    text-align: center;
+}
+
+.gameText {
+    font-size: 20px;
 }
