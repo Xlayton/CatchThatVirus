@@ -27,6 +27,7 @@ createBtn.addEventListener("click", () => {
             for (let element of data) {
                 console.log(element)
                 let lobby = document.createElement("div")
+                lobby.classList.add("lobby-div");
                 let lobbyName = document.createElement("h2")
                 lobbyName.innerText = element.name
                 lobbyName.classList.add("lobby-name")
